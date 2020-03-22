@@ -114,7 +114,7 @@ const processFile = (p: string): Promise<any> => {
   return fs.ensureDir(destFileDir).then(() => {
     return fs.pathExists(destFilePath).then(exists => {
       if (exists) return Promise.resolve();
-      return fs.copyFile(p, destFilePath);
+      return fs.ensureSymlink(p, destFilePath);
     });
   });
 };
