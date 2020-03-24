@@ -15,26 +15,34 @@ const askForPlatforms = (defaultPlatforms: Platform[]) => (
   progress: ProgressFunc,
   platforms: Platform[]
 ): Promise<Platform[]> => {
-  clear(true);
-  return inquirer
-    .prompt([
-      {
-        type: 'checkbox',
-        message: 'Select platforms',
-        name: 'platforms',
-        pageSize: 10,
-        choices: platforms.map(platform => ({
-          name: platform.name,
-          value: platform.id
-        })),
-        default: defaultPlatforms.map(platform => platform.id)
-      }
-    ])
-    .then(choices =>
-      Promise.resolve(
-        platforms.filter(platform => choices.platforms.includes(platform.id))
-      )
-    );
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      clear(true);
+      inquirer
+        .prompt([
+          {
+            type: 'checkbox',
+            message: 'Select platforms',
+            name: 'platforms',
+            pageSize: 10,
+            choices: platforms.map(platform => ({
+              name: platform.name,
+              value: platform.id
+            })),
+            default: defaultPlatforms.map(platform => platform.id)
+          }
+        ])
+        .then(choices =>
+          Promise.resolve(
+            platforms.filter(platform =>
+              choices.platforms.includes(platform.id)
+            )
+          )
+        )
+        .then(resolve)
+        .catch(reject);
+    }, 100);
+  });
 };
 
 const savePlatforms = (config: typeof configPlatforms) => (
