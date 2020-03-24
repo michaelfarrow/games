@@ -2,6 +2,7 @@ import { steps, ProgressFunc } from './lib/ui';
 import openVGDB, { OpenVGDB, Platform } from './lib/openVGDB';
 import inquirer from 'inquirer';
 import configPlatforms from './lib/config-platforms';
+import clear from 'console-clear';
 
 const getPlatforms = (
   progress: ProgressFunc,
@@ -14,7 +15,7 @@ const askForPlatforms = (defaultPlatforms: Platform[]) => (
   progress: ProgressFunc,
   platforms: Platform[]
 ): Promise<Platform[]> => {
-  console.clear();
+  clear(true);
   return inquirer
     .prompt([
       {

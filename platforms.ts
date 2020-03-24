@@ -3,7 +3,7 @@ import { ApiPlatform, LocalPlatform } from './lib/types';
 import config from './lib/config';
 import { request } from './lib/rawg';
 import inquirer from 'inquirer';
-import { Clear } from 'clui';
+import clear from 'console-clear';
 
 const configPlatforms = config<LocalPlatform[]>('platforms', []);
 
@@ -17,7 +17,7 @@ configPlatforms.load().then(configPlatforms => {
           ordering: 'name'
         }).then(platforms => {
           progress('done', 1, 1);
-          Clear();
+          clear();
           return inquirer
             .prompt([
               {

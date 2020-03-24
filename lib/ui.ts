@@ -1,6 +1,7 @@
 import pEachSeries from 'p-each-series';
 import { Progress } from 'clui';
 import clic from 'cli-color';
+import clear from 'console-clear';
 
 export type Step = {
   title: string;
@@ -41,7 +42,7 @@ export const steps = (...steps: Step[]): Promise<void | Step[]> => {
         stepsProgress[i].args = progressArgs.slice() as ProgressFuncArgs;
       }
 
-      console.clear();
+      clear(true);
       stepsProgress.forEach(stepProgress => {
         const [name, current, total] = stepProgress.args;
         const currentStep = stepProgress.step === stepsProgress.length - 1;

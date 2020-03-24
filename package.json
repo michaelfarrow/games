@@ -30,6 +30,7 @@
     "axios": "^0.19.2",
     "cli-color": "^2.0.0",
     "clui": "^0.3.6",
+    "console-clear": "^1.1.1",
     "download": "^7.1.0",
     "fs-extra": "^8.1.0",
     "inquirer": "^7.1.0",
