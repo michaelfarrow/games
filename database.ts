@@ -100,6 +100,9 @@ const unzipOpenVGDB = (progress: ProgressFunc) => {
                 Math.round(written / 1024),
                 Math.round(size / 1024)
               );
+              if (written === size) {
+                writeStream.close();
+              }
             });
           });
           writeStream.on('close', resolve);
