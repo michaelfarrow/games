@@ -1,6 +1,6 @@
 import fs from 'fs-extra';
 
-class Config<T> {
+export class Config<T> {
   path: string;
   defaultVal: T;
   data: T;
