@@ -79,6 +79,7 @@ const matchRomFiles = (platforms: PlatformWithGames[]) => (
   progress: ProgressFunc,
   roms: HashedFile[]
 ): Promise<PlatformWithGames[]> => {
+  const rootPathLength = path.resolve(__dirname, ROMS_DIR_FILTERED).length + 1;
   let totalGames = 0;
   platforms.forEach(platform => {
     totalGames += (platform.games || []).length;
@@ -97,7 +98,7 @@ const matchRomFiles = (platforms: PlatformWithGames[]) => (
           progress(`${platform.name} - ${game.name}`, done, totalGames);
           return {
             ...game,
-            romFile: (file && file.path) || null
+            romFile: (file && file.path.slice(rootPathLength)) || null
           };
         })
         .filter(game => !!game.romFile)
