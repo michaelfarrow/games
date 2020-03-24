@@ -2,6 +2,7 @@ import pEachSeries from 'p-each-series';
 import { Progress } from 'clui';
 import clic from 'cli-color';
 import clear from 'console-clear';
+import { throttle } from 'throttle-debounce';
 
 export type Step = {
   title: string;
@@ -27,6 +28,26 @@ type StepProgress = {
 export const steps = (...steps: Step[]): Promise<void | Step[]> => {
   const stepsProgress: StepProgress[] = [];
 
+  const updateProgressDisplay = throttle(10, () => {
+    clear(true);
+    stepsProgress.forEach(stepProgress => {
+      const [name, current, total] = stepProgress.args;
+      const currentStep = stepProgress.step === stepsProgress.length - 1;
+      console.log(
+        `${clic.cyan(`Step ${stepProgress.step + 1}/${steps.length}`)} ${
+          steps[stepProgress.step].title
+        }${(name && `: ${clic.yellow(name)}`) || ''}`
+      );
+      if (!currentStep) return;
+      console.log();
+      if (current !== undefined && total !== undefined) {
+        console.log(stepProgress.progress.update(current, total));
+        console.log(clic.cyan(`${Math.ceil(current)}/${total}`));
+        console.log();
+      }
+    });
+  });
+
   let prev: any = null;
   return pEachSeries(steps, (step, i) => {
     const progressBar = new Progress(50);
@@ -42,23 +63,7 @@ export const steps = (...steps: Step[]): Promise<void | Step[]> => {
         stepsProgress[i].args = progressArgs.slice() as ProgressFuncArgs;
       }
 
-      clear(true);
-      stepsProgress.forEach(stepProgress => {
-        const [name, current, total] = stepProgress.args;
-        const currentStep = stepProgress.step === stepsProgress.length - 1;
-        console.log(
-          `${clic.cyan(`Step ${stepProgress.step + 1}/${steps.length}`)} ${
-            steps[stepProgress.step].title
-          }${(name && `: ${clic.yellow(name)}`) || ''}`
-        );
-        if (!currentStep) return;
-        console.log();
-        if (current !== undefined && total !== undefined) {
-          console.log(stepProgress.progress.update(current, total));
-          console.log(clic.cyan(`${Math.ceil(current)}/${total}`));
-          console.log();
-        }
-      });
+      updateProgressDisplay();
     };
     updateProgress('');
     return new Promise((resolve, reject) => {
