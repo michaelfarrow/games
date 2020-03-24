@@ -24,12 +24,35 @@ const fetchRoms = (progress: ProgressFunc): Promise<string[]> => {
         reject(err);
       })
       .on('data', item => {
-        if (item.stats.isDirectory()) return;
+        if (item.stats.isDirectory() || item.path.match(/\.checksum$/)) return;
         files.push(item.path);
       })
       .on('end', () => {
         resolve(files);
       });
+  });
+};
+
+const fileHash = (file: string): Promise<string> => {
+  const checksumFile = `${file}.checksum`;
+  return fs.pathExists(checksumFile).then(exists => {
+    if (exists)
+      return fs.readFile(checksumFile, 'utf8').then(data => data.trim());
+    const shasum = crypto.createHash('sha1');
+    return new Promise((resolve, reject) => {
+      fs.createReadStream(file)
+        .on('error', err => {
+          reject(err);
+        })
+        .on('data', data => {
+          shasum.update(data);
+        })
+        .on('end', () => {
+          resolve(shasum.digest('hex'));
+        });
+    }).then((hash: string) => {
+      return fs.writeFile(checksumFile, hash, 'utf8').then(() => hash);
+    });
   });
 };
 
@@ -42,22 +65,12 @@ const hashRoms = (
       path.resolve(__dirname, ROMS_DIR_FILTERED).length + 1
     );
     progress(romPath, i, roms.length);
-    const shasum = crypto.createHash('sha1');
-    return new Promise((resolve, reject) => {
-      fs.createReadStream(rom)
-        .on('error', err => {
-          reject(err);
-        })
-        .on('data', data => {
-          shasum.update(data);
-        })
-        .on('end', () => {
-          progress(romPath, i + 1, roms.length);
-          resolve({
-            path: rom,
-            hash: shasum.digest('hex')
-          });
-        });
+    return fileHash(rom).then(hash => {
+      progress(romPath, i + 1, roms.length);
+      return {
+        path: rom,
+        hash
+      };
     });
   });
 };
