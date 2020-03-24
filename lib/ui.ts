@@ -28,7 +28,7 @@ type StepProgress = {
 export const steps = (...steps: Step[]): Promise<void | Step[]> => {
   const stepsProgress: StepProgress[] = [];
 
-  const updateProgressDisplay = throttle(10, () => {
+  const updateProgressDisplay = throttle(50, () => {
     clear(true);
     stepsProgress.forEach(stepProgress => {
       const [name, current, total] = stepProgress.args;
