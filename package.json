@@ -28,7 +28,7 @@
     "sqlstring-sqlite": "^0.1.1"
   },
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "cli-color": "^2.0.0",
     "clui": "^0.3.6",
     "console-clear": "^1.1.1",
